@@ -1,0 +1,204 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Nghe ôn Quản trị học</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a single reading column with a fixed player bar at the bottom; the sentence being spoken is highlighted. */
+:root{
+  --bg:#f3f6f9; --surface:#ffffff; --fg:#142235; --muted:#5a6b7e; --line:#d9e1ea;
+  --accent:#0e6e6a; --accent-fg:#ffffff; --mark:#ffe58a; --mark-fg:#142235;
+  --font:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1823; --surface:#172433; --fg:#e6edf5; --muted:#9bacbf; --line:#27384b;
+  --accent:#4fd1c5; --accent-fg:#0b1a24; --mark:#6b5a12; --mark-fg:#fff6d6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1823; --surface:#172433; --fg:#e6edf5; --muted:#9bacbf; --line:#27384b;
+  --accent:#4fd1c5; --accent-fg:#0b1a24; --mark:#6b5a12; --mark-fg:#fff6d6; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.7;
+  padding-block:24px 150px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:28px;min-width:0}
+h1{font-size:1.6rem;line-height:1.25;margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:6px 0 0;font-size:.95rem}
+.warn{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:.9rem;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:.9rem;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.chip[aria-current="true"]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+section{display:flex;flex-direction:column;gap:10px}
+h2{font-size:1.15rem;margin:0 0 4px;padding-bottom:8px;border-bottom:2px solid var(--accent);text-wrap:balance}
+h3{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:12px 0 0}
+p{margin:0}
+.s{cursor:pointer;border-radius:4px;padding:1px 2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.s.on{background:var(--mark);color:var(--mark-fg)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding-top:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar-in{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;background:var(--accent);color:var(--accent-fg);min-width:96px}
+.btn.alt{background:transparent;color:var(--fg);border:1px solid var(--line);min-width:0;padding:10px 12px;font-weight:500}
+select{font:inherit;font-size:.85rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;min-width:0;max-width:100%}
+label{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.prog{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.prog>i{display:block;height:100%;width:0;background:var(--accent)}
+.now{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+
+<main>
+  <header>
+    <h1>Quản trị học: Chương 1, 2, 3</h1>
+    <p class="sub">Bản tóm tắt để nghe, khoảng 12 phút ở tốc độ thường. Bấm Phát, hoặc bấm vào câu bất kỳ để nghe từ đó.</p>
+  </header>
+  <div id="warn" class="warn" hidden></div>
+  <nav class="chips" id="chips" aria-label="Chọn chương"></nav>
+  <div id="text"></div>
+</main>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="prog"><i id="prog"></i></div>
+    <div class="row">
+      <button class="btn alt" id="prev" aria-label="Chương trước">⏮</button>
+      <button class="btn" id="play">Phát</button>
+      <button class="btn alt" id="next" aria-label="Chương sau">⏭</button>
+      <span class="now" id="now"></span>
+    </div>
+    <div class="row">
+      <label for="rate">Tốc độ
+        <select id="rate"><option value="0.85">0.85x</option><option value="1" selected>1x</option><option value="1.15">1.15x</option><option value="1.3">1.3x</option><option value="1.5">1.5x</option></select>
+      </label>
+      <label for="voice">Giọng
+        <select id="voice"></select>
+      </label>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = [
+{ t: "Chương 1. Tổng quan về quản trị", blocks: [
+ ["Khái niệm quản trị", "Quản trị là sự tác động có chủ đích của chủ thể quản trị lên đối tượng quản trị, nhằm giúp tổ chức đạt được mục tiêu chung một cách hiệu quả nhất. Quản trị ra đời từ phân công lao động và hợp tác lao động. Mục đích là phối hợp các hoạt động riêng lẻ để hoàn thành mục tiêu chung."],
+ ["Hai cách tiếp cận", "Tiếp cận theo quá trình: Stoner và Robbins coi quản trị là tiến trình hoạch định, tổ chức, lãnh đạo và kiểm soát. Follett gọi quản trị là nghệ thuật đạt mục đích thông qua người khác. Tiếp cận theo hệ thống: hệ thống là tập hợp các bộ phận liên quan và phụ thuộc lẫn nhau, tạo thành một tổng thể hợp nhất. Hệ thống đóng không tương tác với môi trường, hệ thống mở thì tương tác. Hệ thống gồm đầu vào, quá trình chuyển hóa, đầu ra, và có phản hồi, nằm trong môi trường."],
+ ["Kết quả và hiệu quả", "Kết quả là đạt được mục tiêu. Hiệu quả là đạt mục tiêu với hao tốn nguồn lực nhỏ nhất. Nhà quản trị phải cân bằng cả hai."],
+ ["Nhà quản trị và ba cấp quản trị", "Nhà quản trị là người thực hiện các chức năng quản trị để đạt mục tiêu của tổ chức, thông qua điều khiển công việc của cấp dưới. Có ba cấp. Cấp cao, như chủ tịch hội đồng quản trị, tổng giám đốc, xây dựng chiến lược và kế hoạch phát triển. Cấp trung, như trưởng phòng, quản đốc, đưa ra quyết định chiến thuật để thực hiện kế hoạch. Cấp cơ sở, như tổ trưởng, nhóm trưởng, hướng dẫn, đốc thúc nhân viên trong công việc hằng ngày. Cả ba cấp đều thực hiện bốn chức năng: hoạch định, tổ chức, lãnh đạo, kiểm tra."],
+ ["Vai trò nhà quản trị", "Có ba nhóm vai trò. Nhóm quan hệ con người: đại diện, lãnh đạo, liên kết. Nhóm truyền thông: thu thập thông tin, phổ biến thông tin, người phát ngôn. Nhóm ra quyết định: sáng nghiệp, giải quyết rắc rối, phân bổ nguồn lực, đàm phán."],
+ ["Kỹ năng và tố chất", "Ba kỹ năng: kỹ năng khái quát cần nhiều nhất ở cấp cao, kỹ năng quan hệ cần ở cả ba cấp, kỹ năng chuyên môn cần nhiều nhất ở cấp cơ sở. Tố chất cơ bản gồm tâm, trí, văn, lực."],
+ ["Vai trò của quản trị", "Quản trị đáp ứng nhu cầu phân công và hợp tác lao động. Nó kiềm chế các yếu tố ngẫu nhiên, bất định và rủi ro. Nó giải quyết mâu thuẫn giữa nhu cầu ngày càng tăng của con người và nguồn lực ngày càng cạn kiệt, và bù đắp thiếu hụt tài nguyên."],
+ ["Tổ chức và môi trường", "Theo Barnard, tổ chức là hệ thống những hoạt động hay nỗ lực của hai hay nhiều người, được kết hợp có ý thức, hướng tới một mục đích chung. Bốn đặc điểm: kết hợp nỗ lực của các thành viên, mục đích chung, phân công lao động, và hệ thống thứ bậc quyền lực. Môi trường bên ngoài gồm môi trường vĩ mô và môi trường vi mô. Vĩ mô gồm kinh tế, văn hóa xã hội, công nghệ kỹ thuật, chính trị pháp luật, tự nhiên và cơ sở hạ tầng. Vi mô gồm khách hàng, đối thủ cạnh tranh, nhà cung cấp, đối thủ tiềm ẩn, sản phẩm thay thế. Phân tích môi trường bên ngoài để tìm cơ hội và thách thức, phân tích bên trong để tìm điểm mạnh và điểm yếu, từ đó xây dựng chiến lược và chính sách."],
+ ["Bảy cách tiếp cận quản trị", "Một, theo kinh nghiệm: đơn giản, nhưng khó áp dụng khi môi trường thay đổi. Hai, theo quan hệ cá nhân: tiết kiệm chi phí, nhưng thiếu tính pháp lý và chỉ hiệu quả trong thời gian nhất định. Ba, theo thuyết X và Y: thuyết X cho rằng con người lười, đùn đẩy, thiếu trách nhiệm; thuyết Y cho rằng con người muốn lao động; nhà quản trị quyết định môi trường nên X hay Y trội lên. Bốn, theo lý thuyết ra quyết định, theo hai nguyên tắc yếu tố hạn chế và lựa chọn theo xác suất. Năm, theo mô hình toán: là công cụ hỗ trợ, không thể quyết định hoàn toàn dựa vào nó. Sáu, theo vai trò nhà quản trị. Bảy, theo chức năng quản trị, phổ biến nhất hiện nay, gồm lập kế hoạch, tổ chức, lãnh đạo, kiểm tra."],
+ ["Nguyên tắc quản trị hiệu quả", "Trường phái khoa học: xây dựng quy luật làm việc khoa học, tuyển chọn và đào tạo nhân viên khoa học, hợp tác với công nhân, và chia đều công việc và trách nhiệm giữa quản lý và nhân viên. Trường phái hành chính của Fayol có mười bốn nguyên tắc: phân công lao động, quyền hạn và trách nhiệm, kỷ luật, thống nhất mệnh lệnh, thống nhất lãnh đạo, hài hòa lợi ích cá nhân và tập thể, trả công hợp lý, tập trung hóa, chuỗi định hướng, trật tự, công bằng, ổn định nhân sự, sáng kiến, tinh thần đồng đội. Trường phái hệ thống và tình huống: không có luật lệ chung cho mọi tình huống. Các biến số tình huống là quy mô tổ chức, tính đều đặn của công nghệ, tính bất định của môi trường, và sự khác biệt của các cá nhân."]
+]},
+{ t: "Chương 2. Chức năng lập kế hoạch", blocks: [
+ ["Khái niệm và vai trò", "Lập kế hoạch gồm xác định mục tiêu, xây dựng chiến lược và đề ra phương pháp để đạt mục tiêu. Vai trò: giúp tổ chức phát triển có định hướng, tối ưu hóa việc dùng nguồn lực, thích nghi với biến động môi trường, và tạo tiêu chuẩn để kiểm tra."],
+ ["Năm nguyên tắc lập kế hoạch", "Chủ động lập kế hoạch. Quản lý các cấp cùng tham gia. Xây dựng môi trường lập và thực hiện kế hoạch. Phối hợp và có thứ tự ưu tiên giữa các kế hoạch. Đảm bảo tính linh hoạt."],
+ ["Phân loại kế hoạch", "Theo mức độ ảnh hưởng: kế hoạch chiến lược và kế hoạch tác nghiệp. Theo thời gian: dài hạn và ngắn hạn. Theo mức độ chi tiết: kế hoạch định hướng và kế hoạch cụ thể. Theo mức độ sử dụng: kế hoạch một lần và kế hoạch hiện hành."],
+ ["Tháp kế hoạch", "Từ trên xuống: nhiệm vụ tổng quát, các mục tiêu, các chiến lược, các chính sách, các thủ tục và quy tắc, các chương trình, ngân quỹ. Hai tầng trên là kế hoạch chiến lược; chính sách, thủ tục và quy tắc là kế hoạch hiện hành; chương trình và ngân quỹ là kế hoạch một lần."],
+ ["Nhiệm vụ tổng quát", "Mục đích là động cơ hoạt động dài hạn của tổ chức. Sứ mệnh là lý do tồn tại, đặc trưng, giá trị và vị thế của tổ chức. Tầm nhìn là hình ảnh lý tưởng của tổ chức trong tương lai."],
+ ["Mục tiêu", "Mục tiêu là kết quả mong muốn sau khi thực hiện kế hoạch. Phân loại theo thời gian: ngắn, trung, dài hạn; theo cấp ban hành: chiến lược và tác nghiệp. Các mục tiêu phải có thứ tự ưu tiên và thống nhất từ công ty xuống tổ, nhóm. Mục tiêu tốt theo SMART: cụ thể, đo lường được, có thể đạt được, thực tiễn, có thời hạn. Ví dụ: không nói năm nay làm ăn tốt, mà nói tăng doanh thu lên một trăm năm mươi tỉ trong năm hai nghìn không trăm hai mươi mốt."],
+ ["Chiến lược, chính sách, quy tắc, thủ tục", "Chiến lược là chương trình hành động tổng quát để đạt mục tiêu, gồm mục tiêu cơ bản, định hướng dài hạn, nguồn lực, chính sách huy động nguồn lực, hoạt động triển khai và hoạt động kiểm tra. Chính sách là biện pháp tác động đến đối tượng liên quan: hướng dẫn suy nghĩ và hành động, áp dụng tương đối dài, sử dụng linh hoạt. Quy tắc nêu việc được hoặc không được làm, nhân viên bắt buộc tuân thủ. Thủ tục hay quy trình là chuỗi hoạt động chi tiết theo trình tự thời gian cho một công việc cụ thể, bảo đảm thống nhất."],
+ ["Chương trình và ngân quỹ", "Chương trình là tổ hợp mục tiêu, chính sách, thủ tục, quy tắc, công việc và trình tự để thực hiện một mục tiêu nhất định. Ngân quỹ là kế hoạch dự tính chi phí để đạt mục tiêu, thể hiện theo thời gian, điều kiện vật chất, tiền."],
+ ["Căn cứ lập kế hoạch", "Yếu tố bên trong: nhân lực, tài chính, nhà xưởng, máy móc thiết bị, công nghệ. Yếu tố bên ngoài: đối thủ cạnh tranh, khách hàng, nhà cung cấp, nhà phân phối, các bên hữu quan, đặc điểm và xu hướng ngành."],
+ ["Phương pháp MBO", "MBO là quản lý theo mục tiêu. Người quản lý và nhân viên cùng xác định mục tiêu cho từng phòng, dự án, cá nhân, rồi dùng các mục tiêu đó để theo dõi kết quả làm việc. Chu trình: mục tiêu chiến lược, mục tiêu phòng ban, mục tiêu cá nhân, kế hoạch hành động, đánh giá tiến độ, điều chỉnh hành động, đánh giá kết quả, và phản hồi."],
+ ["Tám bước lập kế hoạch", "Một, nhận thức cơ hội. Hai, xác định mục tiêu. Ba, xem xét các điều kiện tiền đề. Bốn, xây dựng các phương án. Năm, đánh giá các phương án, bằng phân tích định tính và định lượng. Sáu, lựa chọn phương án tối ưu. Bảy, xây dựng phương án phụ trợ. Tám, xây dựng ngân quỹ."]
+]},
+{ t: "Chương 3. Chức năng tổ chức", blocks: [
+ ["Khái niệm và nội dung", "Chức năng tổ chức là thiết lập hệ thống các vị trí cho mỗi cá nhân và bộ phận, để họ phối hợp tốt nhất nhằm thực hiện mục tiêu. Gồm xác định ai làm việc gì, ai chịu trách nhiệm kết quả nào, phối hợp ra sao, ai báo cáo cho ai, và quyết định được đưa ra ở cấp nào. Ba nội dung: tổ chức cơ cấu, tổ chức quá trình, tổ chức nhân sự. Tổ chức cơ cấu là thiết kế cấu trúc và nhiệm vụ cho từng bộ phận. Tổ chức quá trình là xác định quyền hạn, trách nhiệm giữa các bộ phận và xây dựng nội quy, quy chế. Tổ chức nhân sự là lựa chọn cán bộ cho bộ máy quản lý."],
+ ["Cơ cấu, tầm quản lý, cấp quản lý", "Cơ cấu tổ chức là tổng hợp các bộ phận có quan hệ qua lại, được chuyên môn hóa, có nhiệm vụ, quyền hạn, trách nhiệm nhất định, bố trí theo các cấp, các khâu, nhằm thực hiện mục tiêu chung. Tầm quản lý là số người hoặc bộ phận mà một nhà quản lý kiểm soát hiệu quả. Cấp quản lý là cấp được quyền ra quyết định và đòi hỏi tuân thủ."],
+ ["Quy trình thiết kế cơ cấu", "Bốn bước: xác định mục tiêu chiến lược, xác định các hoạt động cần thiết, phân chia tổ chức thành các bộ phận, xác định mối quan hệ giữa các bộ phận."],
+ ["Bốn cách phân chia bộ phận", "Theo chức năng: ưu điểm là dùng được chuyên gia, thuận lợi đào tạo và phối hợp nội bộ; nhược điểm là coi nhẹ mục tiêu chung, khó phối hợp giữa các phòng, khó quy trách nhiệm. Theo sản phẩm: ưu điểm là xử lý nhanh vấn đề từng sản phẩm, đánh giá được kết quả từng sản phẩm; nhược điểm là coi nhẹ mục tiêu chung, tăng chi phí vì mỗi sản phẩm có bộ phận chức năng riêng. Theo khách hàng: dùng được chuyên gia phù hợp từng nhóm khách; nhược điểm là tăng chi phí phối hợp. Theo lãnh thổ: chú ý vấn đề địa phương, hiểu sâu nhu cầu khách hàng, đào tạo quản lý cấp cao; nhược điểm là tăng chi phí, trùng lặp, cần nhiều nhà quản lý tổng quát."],
+ ["Sáu kiểu cơ cấu: trực tuyến và chức năng", "Trực tuyến: mỗi cấp dưới chỉ nhận lệnh từ một cấp trên duy nhất. Ưu điểm: thông tin nhanh, trách nhiệm rõ, thống nhất mệnh lệnh. Nhược điểm: nhà quản lý cần kiến thức toàn diện, hạn chế chuyên gia, dễ gia trưởng, khó kiểm soát khi quy mô lớn. Chỉ hợp doanh nghiệp nhỏ, đơn giản. Chức năng: các phòng chức năng trực tiếp ra quyết định xuống bộ phận trực thuộc. Ưu điểm: có chuyên gia, chuyên môn hóa. Nhược điểm: vi phạm nguyên tắc một thủ trưởng, trách nhiệm không rõ, dễ mâu thuẫn. Nay rất ít áp dụng."],
+ ["Trực tuyến chức năng, trực tuyến tham mưu", "Trực tuyến chức năng: kết hợp hai kiểu trên; phòng chức năng chỉ tham mưu cho người quản lý cấp cao, không trực tiếp ra quyết định, trừ khi được ủy quyền. Giữ thống nhất mệnh lệnh, nâng chất lượng quyết định, quy được trách nhiệm. Phổ biến nhất ở doanh nghiệp Việt Nam. Trực tuyến tham mưu: mỗi cấp quản lý có bộ phận tham mưu giúp chuẩn bị, ban hành, thực hiện quyết định; xuất phát từ quân đội, ít dùng trong kinh tế."],
+ ["Dự án và ma trận", "Cơ cấu dự án: phát triển từ trực tuyến hoặc trực tuyến chức năng; chỉ tồn tại cùng thời gian dự án, xong thì giải thể; một người có thể tham gia nhiều dự án. Hợp doanh nghiệp đặc thù, sản phẩm giá trị lớn, nhiều địa điểm. Cơ cấu ma trận: hợp doanh nghiệp lớn, nhiều chi nhánh, thể hiện trình độ quản lý cao, phù hợp tổng công ty và công ty đa quốc gia. Cơ cấu cho biết bốn thông tin: nhiệm vụ, các bộ phận, các cấp quản lý, các tuyến quyền hạn. Nhưng không cho thấy truyền thông và quyền hạn cụ thể, nên cần giải thích kỹ."],
+ ["Bảy nguyên tắc xây dựng cơ cấu", "Mục tiêu. Xác định các chức năng. Giao quyền theo kết quả mong muốn. Bậc thang. Thống nhất trong mệnh lệnh. Hiệu quả. Linh hoạt."],
+ ["Quyền hạn, phân quyền, tập quyền", "Quyền hạn là quyền tự chủ ra quyết định và quyền đòi hỏi tuân thủ, gắn với một vị trí quản lý. Có ba loại: quyền hạn trực tuyến, chức năng, tham mưu. Phân quyền là chia quyền lực cho các cán bộ cấp thấp hơn. Tập quyền là xu hướng giữ quyền lực trong tay quản lý cấp cao."],
+ ["Ủy quyền", "Ủy quyền là giao phó quyền hạn và trách nhiệm cho người khác để họ thay mình thực hiện công việc nhất định. Năm bước: xác định mục tiêu, chọn người phù hợp, giao quyền hạn, cam kết trách nhiệm, theo dõi và đánh giá. Năm nguyên tắc: theo mục tiêu, theo chức năng, bậc thang, tương xứng giữa quyền hạn và trách nhiệm, và tính tuyệt đối trong trách nhiệm, nghĩa là người ủy quyền vẫn chịu trách nhiệm cuối cùng. Lưu ý: giao quyền thật sự, duy trì thông tin hai chiều, cấp trên nắm rõ mục tiêu và năng lực nhân viên, cho phép cấp dưới mắc sai lầm, có hệ thống kiểm tra, không ủy quyền vĩnh viễn, và ủy quyền bằng văn bản."],
+ ["Tổ chức nhân sự", "Nhân lực là tổng hợp thể lực và trí lực. Tổ chức nhân sự là hoàn thiện cơ cấu thông qua tuyển chọn, đào tạo, sắp xếp, sử dụng, đánh giá, đề bạt cán bộ vào từng vị trí. Nếu làm không tốt thì cơ cấu khó vận hành. Nguồn cán bộ quản lý gồm hai nguồn. Bên trong, quan trọng hơn, bảo đảm quản lý liên tục, dùng sơ đồ dự trữ nhân lực. Bên ngoài: sinh viên mới ra trường, người thân bạn bè nhân viên, nhân viên cũ, nhân viên đối thủ, người thất nghiệp, người hành nghề tự do. Khi lựa chọn, phải xác định rõ yêu cầu của vị trí: trình độ, nhận thức, kỹ năng, quan hệ; công việc phải tương xứng, có thử thách và tạo điều kiện sáng tạo."]
+]}
+];
+
+const $ = id => document.getElementById(id);
+const sents = []; // {el, ch}
+const chStart = [];
+const textEl = $('text'), chips = $('chips');
+
+DATA.forEach((c, ci) => {
+  const sec = document.createElement('section'); sec.id = 'c' + ci;
+  const h = document.createElement('h2'); h.textContent = c.t; sec.append(h);
+  chStart[ci] = sents.length;
+  c.blocks.forEach(([title, body]) => {
+    const h3 = document.createElement('h3'); h3.textContent = title; sec.append(h3);
+    const p = document.createElement('p');
+    body.split(/(?<=[.!?])\s+/).forEach(s => {
+      const span = document.createElement('span'); span.className = 's'; span.textContent = s + ' ';
+      const i = sents.length; span.onclick = () => { start(i); };
+      sents.push({ el: span, text: s, ch: ci }); p.append(span);
+    });
+    sec.append(p);
+  });
+  textEl.append(sec);
+  const b = document.createElement('button'); b.className = 'chip'; b.textContent = 'Chương ' + (ci + 1);
+  b.onclick = () => start(chStart[ci]); chips.append(b);
+});
+
+const synth = window.speechSynthesis;
+let idx = 0, playing = false, token = 0, voices = [];
+const words = sents.reduce((n, s) => n + s.text.split(/\s+/).length, 0);
+
+function loadVoices() {
+  voices = (synth ? synth.getVoices() : []).slice();
+  const vi = voices.filter(v => /^vi/i.test(v.lang));
+  const list = vi.length ? vi : [];
+  const sel = $('voice'); const keep = sel.value;
+  sel.innerHTML = '';
+  list.forEach(v => { const o = document.createElement('option'); o.value = v.voiceURI; o.textContent = v.name; sel.append(o); });
+  if (keep) sel.value = keep;
+  const w = $('warn');
+  if (!synth) { w.hidden = false; w.textContent = 'Trình duyệt này không hỗ trợ đọc thành tiếng. Hãy mở trang bằng Chrome, Edge hoặc Safari.'; }
+  else if (!list.length) { w.hidden = false; w.textContent = 'Chưa thấy giọng tiếng Việt trên thiết bị. Trang vẫn thử đọc bằng giọng mặc định, nhưng nên cài giọng Việt trong cài đặt hệ thống (Android: Chuyển văn bản thành giọng nói; iPhone: Trợ năng > Nội dung được đọc > Giọng nói).'; }
+  else w.hidden = true;
+}
+if (synth) { loadVoices(); synth.onvoiceschanged = loadVoices; }
+
+function setCurrent(i) {
+  document.querySelectorAll('.s.on').forEach(e => e.classList.remove('on'));
+  const s = sents[i]; if (!s) return;
+  s.el.classList.add('on');
+  if (playing) s.el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  chips.querySelectorAll('.chip').forEach((c, k) => c.setAttribute('aria-current', k === s.ch));
+  let done = 0; for (let k = 0; k < i; k++) done += sents[k].text.split(/\s+/).length;
+  $('prog').style.width = (100 * done / words) + '%';
+  $('now').textContent = 'Chương ' + (s.ch + 1) + ' · câu ' + (i + 1) + '/' + sents.length;
+}
+
+function speak() {
+  if (!playing || idx >= sents.length) { if (idx >= sents.length) { playing = false; $('play').textContent = 'Phát lại'; idx = 0; } return; }
+  const my = token; const i = idx;
+  setCurrent(i);
+  const u = new SpeechSynthesisUtterance(sents[i].text);
+  u.lang = 'vi-VN'; u.rate = parseFloat($('rate').value);
+  const v = voices.find(x => x.voiceURI === $('voice').value); if (v) u.voice = v;
+  u.onend = () => { if (my === token && playing) { idx = i + 1; speak(); } };
+  u.onerror = e => { if (my === token && e.error !== 'interrupted' && e.error !== 'canceled') { idx = i + 1; speak(); } };
+  synth.speak(u);
+}
+function start(i) {
+  if (!synth) return;
+  token++; synth.cancel(); idx = i; playing = true; $('play').textContent = 'Tạm dừng';
+  setTimeout(speak, 60);
+}
+$('play').onclick = () => {
+  if (!synth) return;
+  if (playing) { playing = false; token++; synth.cancel(); $('play').textContent = 'Tiếp tục'; }
+  else start(idx);
+};
+const curCh = () => sents[Math.min(idx, sents.length - 1)].ch;
+$('prev').onclick = () => { const c = curCh(); const inFirst = idx - chStart[c] > 3; start(chStart[inFirst ? c : Math.max(0, c - 1)]); };
+$('next').onclick = () => { const c = curCh(); if (c < DATA.length - 1) start(chStart[c + 1]); };
+['rate', 'voice'].forEach(id => $(id).onchange = () => { if (playing) start(idx); });
+setCurrent(0);
+document.querySelectorAll('.s.on').forEach(e => e.classList.remove('on'));
+</script>
+
+</body></html>
